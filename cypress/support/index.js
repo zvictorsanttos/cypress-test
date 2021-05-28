@@ -21,7 +21,7 @@ import './commands'
 
 // Garantir a chamada antes de cada testes
 
-before (()  => {
+beforeEach (() => {
     //cy.server precisa até ativo para route e request
     cy.server(); 
     cy.create0ng();

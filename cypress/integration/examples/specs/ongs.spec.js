@@ -43,7 +43,7 @@ describe('Ongs', () => {
         })
         
     });
-      it('Usuário deve conseguir realizar um login', () => {
+    it('Usuário deve conseguir realizar um login', () => {
        
         // const create0ngID = Cypress.env('created0ngID');
         //     cy.log(create0ngID);
@@ -52,4 +52,46 @@ describe('Ongs', () => {
             cy.get('input').type(Cypress.env('created0ngID'));
             cy.get('.button').click();
 });
+    it('Usuário deve conseguir realizar o logout', () => {
+        
+        cy.login(); // Codigo no commands.js
+        cy.get('button').click();
+     });
+
+     it('Usuário deve conseguir cadastrar novos casos', () => {
+        
+        cy.login();
+        cy.get('.button').click();
+        cy.get('[placeholder="Título do caso"]').type('Animais de Rua');
+        cy.get('textarea').type('Vaquinha para ajudar animais de rua');
+        cy.get('[placeholder="Valor em reais"]').type('5000');
+        
+        // Sempre antes de disparar requição precisa dizer qual rota quer monitar
+        
+        cy.route('POST', '**/incidents').as('newIncident');
+        
+        cy.get('.button').click();
+
+        cy.wait('@newIncident').then((xhr) => {
+            expect(xhr.status).to.eq(200); //Garantir que o stauts seja 200.
+            expect(xhr.response.body).has.property('id'); // Garantir que o body vai ter Id
+            expect(xhr.response.body.id).is.not.null; // Garantir que a resposta não seja nula 
+        })
+
+     });
+     it('Usuarios devem conseguir excluir um caso', () => {
+        cy.createNewIncident();
+        cy.login(); 
+        
+        cy.route('DELETE','**/incidents/*').as('deleteIncident');
+
+        cy.get('ul > :nth-child(1) > button > svg').click();
+
+        cy.wait('@deleteIncident').then((xhr) => {
+            expect(xhr.status).to.eq(204);
+            expect(xhr.response.body).to.be.empty;
+        })
+     });
 });
+
+    

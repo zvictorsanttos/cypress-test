@@ -40,7 +40,40 @@ Cypress.Commands.add("create0ng", () => {
         expect(response.body.id).is.not.null;
         cy.log(response.body.id);
 
-        Cypress.env('created0ngid', response.body.id); // Criar um ambiente temporario de testes
+        Cypress.env('created0ngID', response.body.id); // Criar um ambiente temporario de testes
 
     });
+})
+
+Cypress.Commands.add('createNewIncident', () => {
+    Cypress.env('created0ngid')
+    cy.request ({
+        method: 'POST',
+        url: 'http://localhost:3333/incidents',
+        headers: { 'Authorization' : `${ Cypress.env('created0ngID') }`, },
+        body: {
+            title: "Animais de Famintosqweqweqweqw",
+            description: "qa teste automatizados compasso uol",
+            value: "5000"
+        }
+    
+    // Verificar o request 
+    }).then(response => {
+        expect(response.body.id).is.not.null;
+        cy.log(response.body.id);
+
+        // Salvar em uma variavel de ambiente
+        Cypress.env('createdIncidentId', response.body.id); 
+    });
+})
+
+Cypress.Commands.add('login', () => {
+    cy.visit('http://localhost:3000/profile', {
+                
+        // onBeforeLoad = Função para indicar que Antes da página carregar fazer alguma ação
+        onBeforeLoad:(browser) => { 
+        browser.localStorage.setItem('ongId', Cypress.env('created0ngID'))
+        browser.localStorage.setItem('ongName','testtestestes'); 
+    }
+});
 })
